@@ -1,0 +1,35 @@
+
+
+INCLUDE=-I/usr/include/mysql -I/usr/local/include/opencv2
+
+LIB=-L/usr/lib -L/usr/local/lib
+ 
+CC=/usr/bin/g++
+
+CCOPTS=-std=c++0x -w `pkg-config --cflags --libs opencv` -fstack-protector $(INCLUDE) $(LIB)  
+
+clean: 
+	rm -f *.o 
+	rm -f faceRecog 
+
+all: faceRecog
+	    
+faceRecog: detectObject.o ImageUtils_0.7.o preprocessFace.o recognition.o main.o
+	$(CC) $(CCOPTS) -o faceRecog detectObject.o ImageUtils_0.7.o preprocessFace.o recognition.o main.o $(LIB) -lmysqlclient -lrt -lpthread 
+ 
+detectObject.o: detectObject.cpp 
+	$(CC) $(CCOPTS) -fpermissive -c detectObject.cpp $(LIB)
+
+ImageUtils_0.7.o: ImageUtils_0.7.cpp
+	$(CC) $(CCOPTS) -fpermissive -c ImageUtils_0.7.cpp $(LIB)
+
+preprocessFace.o: preprocessFace.cpp
+	$(CC) $(CCOPTS) -fpermissive -c preprocessFace.cpp $(LIB)
+
+main.o: main.cpp
+	$(CC) $(CCOPTS) -fpermissive -c main.cpp $(LIB) -lmysqlclient
+#-lmysqlcppconn
+
+recognition.o: recognition.cpp
+	$(CC) $(CCOPTS) -fpermissive -c recognition.cpp $(LIB)
+
